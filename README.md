@@ -2,6 +2,8 @@
 
 Uma aplicação móvel desenvolvida com **Expo** e **React Native** que permite explorar, buscar e favoritar Pokémon utilizando a [PokéAPI](https://pokeapi.co/).
 
+Demonstração [IOS](https://www.youtube.com/watch?v=Kx01v5fhH8Y)
+
 ## 📱 Funcionalidades
 
 ### ✅ RF01 - Tela Principal (Pokédex)
