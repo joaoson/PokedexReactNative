@@ -1,9 +1,7 @@
 const BASE_URL = 'https://pokeapi.co/api/v2';
 
-// Delay helper
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-// Helper function to add timeout to fetch
 const fetchWithTimeout = async (url, options = {}, timeout = 10000) => {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
@@ -24,14 +22,13 @@ const fetchWithTimeout = async (url, options = {}, timeout = 10000) => {
   }
 };
 
-// Fetch a list of Pokemon with pagination
 export const fetchPokemonList = async (limit = 20, offset = 0) => {
   try {
     console.log(`[Service] Fetching pokemon list - limit: ${limit}, offset: ${offset}`);
     const url = `${BASE_URL}/pokemon?limit=${limit}&offset=${offset}`;
     console.log('[Service] URL:', url);
 
-    await delay(3000); // 👈 artificial delay
+    await delay(3000); 
 
     const response = await fetchWithTimeout(url);
     console.log('[Service] Response received, status:', response.status);
@@ -49,7 +46,6 @@ export const fetchPokemonList = async (limit = 20, offset = 0) => {
   }
 };
 
-// Fetch detailed information for a single Pokemon
 export const fetchPokemonDetails = async (urlOrId) => {
   try {
     const url = typeof urlOrId === 'string' && urlOrId.startsWith('http') 
@@ -58,7 +54,7 @@ export const fetchPokemonDetails = async (urlOrId) => {
 
     console.log(`[Service] Fetching pokemon details from: ${url}`);
 
-    await delay(3000); // 👈 artificial delay
+    await delay(3000); 
 
     const response = await fetchWithTimeout(url);
     console.log('[Service] Details response received, status:', response.status);
@@ -76,12 +72,11 @@ export const fetchPokemonDetails = async (urlOrId) => {
   }
 };
 
-// Fetch multiple Pokemon details in parallel
 export const fetchMultiplePokemonDetails = async (pokemonList) => {
   try {
     console.log(`[Service] Fetching details for ${pokemonList.length} pokemon`);
 
-    await delay(3000); // 👈 artificial delay
+    await delay(3000); 
 
     const promises = pokemonList.map(pokemon => fetchPokemonDetails(pokemon.url));
     const results = await Promise.all(promises);
@@ -94,14 +89,13 @@ export const fetchMultiplePokemonDetails = async (pokemonList) => {
   }
 };
 
-// Search for a specific Pokemon by name or ID
 export const searchPokemon = async (query) => {
   try {
     console.log(`[Service] Searching for pokemon: ${query}`);
     const url = `${BASE_URL}/pokemon/${query.toLowerCase()}`;
     console.log('[Service] Search URL:', url);
 
-    await delay(3000); // 👈 artificial delay
+    await delay(3000); 
 
     const response = await fetchWithTimeout(url);
     console.log('[Service] Search response received, status:', response.status);

@@ -1,4 +1,3 @@
-// usePokemonController.js
 import { useState, useCallback } from 'react';
 import { 
   fetchPokemonList, 
@@ -6,13 +5,29 @@ import {
   searchPokemon 
 } from '../services/pokemonService';
 
+const isNetworkError = (error) => {
+  if (!error) return false;
+  
+  const errorMessage = error.message?.toLowerCase() || '';
+  const errorString = error.toString().toLowerCase();
+  
+  return (
+    errorMessage.includes('network') ||
+    errorMessage.includes('fetch') ||
+    errorMessage.includes('connection') ||
+    errorMessage.includes('timeout') ||
+    errorString.includes('network request failed') ||
+    error.name === 'TypeError' ||
+    error.name === 'NetworkError'
+  );
+};
+
 export const usePokemonController = () => {
   const [pokemons, setPokemons] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [offset, setOffset] = useState(0);
 
-  // Load initial or next page of Pokemon
   const loadPokemons = useCallback(async (resetList = false) => {
     try {
       console.log('[Controller] Loading pokemons...');
@@ -21,14 +36,12 @@ export const usePokemonController = () => {
 
       const currentOffset = resetList ? 0 : offset;
       
-      // Only fetch the list (no details)
       const listData = await fetchPokemonList(20, currentOffset);
       
-      // Store basic info with extracted ID from URL
       const basicPokemons = listData.results.map((pokemon, index) => ({
         name: pokemon.name,
         url: pokemon.url,
-        id: currentOffset + index + 1, // Extract ID from position
+        id: currentOffset + index + 1, 
       }));
       
       if (resetList) {
@@ -43,14 +56,19 @@ export const usePokemonController = () => {
       return { success: true };
     } catch (err) {
       console.error('[Controller] Error loading pokemons:', err);
-      setError('Erro ao carregar Pokémon. Verifique sua conexão.');
+      
+      if (isNetworkError(err)) {
+        setError('Sem conexão com a internet. Verifique sua conexão e tente novamente.');
+      } else {
+        setError('Erro ao carregar Pokémon. Tente novamente mais tarde.');
+      }
+      
       return { success: false, error: err };
     } finally {
       setLoading(false);
     }
   }, [offset]);
 
-  // Fetch details for a single Pokemon when needed
   const fetchPokemonDetail = useCallback(async (pokemon) => {
     try {
       console.log('[Controller] Fetching details for:', pokemon.name);
@@ -59,11 +77,23 @@ export const usePokemonController = () => {
       return { success: true, data: details };
     } catch (err) {
       console.error('[Controller] Error fetching pokemon details:', err);
-      return { success: false, error: err };
+      
+      if (isNetworkError(err)) {
+        return { 
+          success: false, 
+          error: 'network',
+          message: 'Sem conexão com a internet' 
+        };
+      }
+      
+      return { 
+        success: false, 
+        error: 'general',
+        message: 'Erro ao carregar detalhes' 
+      };
     }
   }, []);
 
-  // Search for a specific Pokemon
   const searchForPokemon = useCallback(async (query) => {
     try {
       console.log('[Controller] Searching for pokemon:', query);
@@ -78,16 +108,31 @@ export const usePokemonController = () => {
       console.error('[Controller] Error searching pokemon:', err);
       
       if (err.message === 'Pokemon not found') {
-        return { success: false, error: 'Pokemon not found' };
+        return { 
+          success: false, 
+          error: 'not_found',
+          message: 'Pokemon not found' 
+        };
       }
       
-      return { success: false, error: 'Erro ao buscar Pokémon' };
+      if (isNetworkError(err)) {
+        return { 
+          success: false, 
+          error: 'network',
+          message: 'Sem conexão com a internet' 
+        };
+      }
+      
+      return { 
+        success: false, 
+        error: 'general',
+        message: 'Erro ao buscar Pokémon' 
+      };
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Reset the list
   const resetPokemons = useCallback(() => {
     console.log('[Controller] Resetting pokemon list');
     setPokemons([]);
