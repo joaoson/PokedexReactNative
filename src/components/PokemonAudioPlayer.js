@@ -8,12 +8,10 @@ const PokemonAudioPlayer = ({ currentRoute }) => {
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
-  // Hide button on Details screen
   const shouldHideButton = currentRoute === 'Details';
 
   useEffect(() => {
     if (shouldHideButton) {
-      // Fade out and scale down animation
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 0,
@@ -27,7 +25,6 @@ const PokemonAudioPlayer = ({ currentRoute }) => {
         })
       ]).start();
     } else {
-      // Fade in and scale up animation
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 1,
@@ -58,7 +55,6 @@ const PokemonAudioPlayer = ({ currentRoute }) => {
     try {
       console.log('Loading Pokemon Music');
       
-      // Set audio mode for better experience
       await Audio.setAudioModeAsync({
         playsInSilentModeIOS: true,
         staysActiveInBackground: false,
@@ -70,7 +66,7 @@ const PokemonAudioPlayer = ({ currentRoute }) => {
         { 
           shouldPlay: true,
           isLooping: true,
-          volume: 0.3, // 30% volume so it's not too loud
+          volume: 0.3, 
         }
       );
       
