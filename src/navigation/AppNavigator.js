@@ -1,16 +1,35 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from '../screens/HomeScreen';
 import DetailsScreen from '../screens/DetailsScreen';
 import FavoritesScreen from '../screens/FavoritesScreen';
+import PokemonAudioPlayer from '../components/PokemonAudioPlayer';
 
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
+  const [currentRoute, setCurrentRoute] = useState('Home');
+  const routeNameRef = useRef('Home');
+
   return (
-    <NavigationContainer>
+    <NavigationContainer
+      onReady={() => {
+        routeNameRef.current = 'Home';
+      }}
+      onStateChange={(state) => {
+        if (state) {
+          const route = state.routes[state.index];
+          const routeName = route.name;
+          
+          if (routeNameRef.current !== routeName) {
+            routeNameRef.current = routeName;
+            setCurrentRoute(routeName);
+          }
+        }
+      }}
+    >
       <Stack.Navigator
         screenOptions={{
           headerStyle: {
@@ -45,6 +64,7 @@ const AppNavigator = () => {
           }}
         />
       </Stack.Navigator>
+      <PokemonAudioPlayer currentRoute={currentRoute} />
     </NavigationContainer>
   );
 };

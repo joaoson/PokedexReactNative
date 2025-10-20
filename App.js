@@ -11,10 +11,10 @@ if (!__DEV__) {
 
 export default function App() {
   return (
-        <SafeAreaProvider>
-            <FavoritesProvider>
-              <AppNavigator />
-            </FavoritesProvider>
-        </SafeAreaProvider>
+    <SafeAreaProvider>
+      <FavoritesProvider>
+        <AppNavigator />
+      </FavoritesProvider>
+    </SafeAreaProvider>
   );
 }
